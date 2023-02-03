@@ -6,10 +6,17 @@ const { Server } = require("socket.io");
 const server = http.createServer(app);
 const cors = require("cors");
 
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers,
+} = require("../utils/users");
+
 app.use(cors);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
