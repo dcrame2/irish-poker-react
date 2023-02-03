@@ -1,46 +1,65 @@
-import { useEffect, useState } from "react";
+import React,{useState} from 'react';
+import styled from 'styled-components';
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:3002");
+import UsersCard from '../components/UsersCard';
+import GameScreen from '../pages/GameScreen';
 
-function StartGameScreen() {
-  const [message, setMessage] = useState("");
-  const [messageReceived, setMessageReceived] = useState("");
-  const [room, setRoom] = useState("");
 
-  const joinRoom = () => {
-    if (room !== "") {
-      socket.emit("join_room", room);
-    }
-  };
 
-  const sendMessage = () => {
-    socket.emit("send_message", { message, room });
-  };
+const GameContainer = styled.div`
+  max-width: 1000px;
+  margin: auto;
+  height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: green;
+  .inner-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+`;
 
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      setMessageReceived(data.message);
-    });
-  }, [socket]);
 
+
+
+const StartGameScreen = ({users, playerOne}) => {
+    const [gameStarted, setGameStarted] = useState(false);
+  console.log(playerOne);
+
+    console.log(users);
+    const startGameHandler = () => {
+        setGameStarted(true);
+  }
   return (
-    <>
-      <input
-        placeholder="Room Number..."
-        onChange={(event) => {
-          setRoom(event.target.value);
-        }}
-      />
-      <button onClick={joinRoom}>Join Room</button>
-      <input
-        placeholder="message"
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send Message</button>
-      <h1>Message:</h1>
-      {messageReceived}
-    </>
-  );
+  <GameContainer>
+     {!gameStarted ? 
+        (<div className="inner-container">
+        <h1>Waiting for more players...</h1>
+        <h2>Players:</h2>
+            {users.map((user, i) => {
+            //  if(i === 0) {
+            //   setPlayerOne(1);
+            //  }
+          
+              return <UsersCard users={user.username} key={i}/>
+        } 
+      )}
+
+      {users[0] ?  <button onClick={startGameHandler}>Start Game</button> : `player 1 starts the game`}
+       {/* {users.map((user) => {
+          if(user.id === playerOne) {
+            return;
+          } else {
+            return `player 1 starts the game`
+          }
+       }) } */}
+      </div>) :
+      <GameScreen />
+}
+    </GameContainer>
+  )
 }
 
-export default StartGameScreen;
+export default StartGameScreen
