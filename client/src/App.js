@@ -1,6 +1,6 @@
 // import "./App.css";
 import io from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import StartGameScreen from "./pages/StartGameScreen";
 import { Link } from "react-router-dom";
@@ -36,7 +36,7 @@ function App() {
   const [name, setName] = useState("");
   const [nameReceived, setNameReceived] = useState("");
   const [users, setUsers] = useState([]);
-  const [playerOne, setPlayerOne] = useState();
+  const playerOne = users[0];
 
   const joinRoom = () => {
     if (room !== "") {
@@ -45,6 +45,8 @@ function App() {
 
     socket.emit("send_name", { name, room });
     setRoomJoined(true);
+
+    socket.emit("startGame", users);
   };
 
   useEffect(() => {
@@ -55,19 +57,16 @@ function App() {
     socket.on("roomUsers", ({ room, users }) => {
       outputRoomName(room);
       setUsers(users);
-      setPlayerOne(users[0].id);
     });
   }, [socket]);
 
   const outputRoomName = (room) => {
     return <div>Your room is {room}</div>;
   };
-
   return (
     <GameContainer>
       {!roomJoined ? (
         <div className="inner-container">
-          {/* <form onSubmit={(e) => formSubmitHandler(e)}> */}
           <label htmlFor="room">Room</label>
           <input
             name="room"

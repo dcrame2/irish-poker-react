@@ -7,7 +7,7 @@ const UsersCardContainer = styled.div`
 `;
 
 const UsersCard = ({ users, playerNumber }) => {
-  console.log(playerNumber);
+//   console.log(playerNumber);
   return (
     <UsersCardContainer>
       Player #{playerNumber}: {users}

@@ -21,11 +21,11 @@ const GameContainer = styled.div`
 
 const StartGameScreen = ({ users, playerOne, outputRoomName }) => {
   const [gameStarted, setGameStarted] = useState(false);
-
-  console.log(users);
   const startGameHandler = () => {
     setGameStarted(true);
   };
+
+  console.log(playerOne)
   return (
     <GameContainer>
       {!gameStarted ? (
@@ -42,8 +42,7 @@ const StartGameScreen = ({ users, playerOne, outputRoomName }) => {
               />
             );
           })}
-
-          {users[0] ? (
+          {playerOne  ? (
             <button onClick={startGameHandler}>Start Game</button>
           ) : (
             `player 1 starts the game`

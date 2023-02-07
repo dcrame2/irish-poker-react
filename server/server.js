@@ -39,11 +39,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_name", (data) => {
-    // socket.to(data.room).emit("receive_name", data);
     socket.to(data.room).emit("receive_name", data);
-
-    // const user = userJoin(socket.id, username, room);
   });
+
+  // socket.emit("chatMessage", {
+  //   user: getCurrentUser(socket.id),
+  // });
 });
 
 const PORT = 3002 || process.env.PORT;
