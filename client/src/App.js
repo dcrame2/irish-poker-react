@@ -58,6 +58,8 @@ function App() {
       outputRoomName(room);
       setUsers(users);
     });
+
+    socket.emit("chatMessage", console.log("sup"));
   }, [socket]);
 
   const outputRoomName = (room) => {

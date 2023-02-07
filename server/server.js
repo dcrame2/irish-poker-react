@@ -42,9 +42,10 @@ io.on("connection", (socket) => {
     socket.to(data.room).emit("receive_name", data);
   });
 
-  // socket.emit("chatMessage", {
-  //   user: getCurrentUser(socket.id),
-  // });
+  socket.on("chatMessage", (msg) => {
+    const user = getCurrentUser(socket.id);
+    io.to(user.room).emit("message", formatMessage(user.username, msg));
+  });
 });
 
 const PORT = 3002 || process.env.PORT;

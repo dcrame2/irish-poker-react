@@ -25,7 +25,8 @@ const StartGameScreen = ({ users, playerOne, outputRoomName }) => {
     setGameStarted(true);
   };
 
-  console.log(playerOne)
+  console.log(`Player 1: ${playerOne}`);
+  console.log(`Users: ${users}`);
   return (
     <GameContainer>
       {!gameStarted ? (
