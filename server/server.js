@@ -27,8 +27,9 @@ io.on("connection", (socket) => {
 
   socket.on("join_room", (data) => {
     const user = userJoin(socket.id, data.name, data.room);
-    console.log(user);
+
     console.log(`User joined ${data.room}: ${socket.id}`);
+    console.log(user);
     socket.join(user.room);
 
     io.to(user.room).emit("roomUsers", {

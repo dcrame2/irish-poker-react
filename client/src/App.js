@@ -53,10 +53,15 @@ function App() {
     });
 
     socket.on("roomUsers", ({ room, users }) => {
+      outputRoomName(room);
       setUsers(users);
       setPlayerOne(users[0].id);
     });
   }, [socket]);
+
+  const outputRoomName = (room) => {
+    return <div>Your room is {room}</div>;
+  };
 
   return (
     <GameContainer>
@@ -86,9 +91,11 @@ function App() {
           <button onClick={joinRoom}>Join Game</button>
         </div>
       ) : (
-        <>
-          <StartGameScreen playerOne={playerOne} users={users} />
-        </>
+        <StartGameScreen
+          outputRoomName={outputRoomName}
+          playerOne={playerOne}
+          users={users}
+        />
       )}
     </GameContainer>
   );
