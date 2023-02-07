@@ -16,7 +16,7 @@ const GameContainer = styled.div`
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  background-color: green;
+  background-color: grey;
   .inner-container {
     display: flex;
     flex-direction: column;
