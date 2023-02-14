@@ -57,22 +57,8 @@ function App() {
     fetch(url)
       .then((res) => res.json()) // parse response as JSON
       .then((data) => {
-        let deckId = "";
         console.log(data);
-        deckId = data.deck_id;
-        console.log(deckId);
-        singlePlayer(deckId);
-      })
-      .catch((err) => {
-        console.log(`error ${err}`);
-      });
-  };
-
-  const singlePlayer = (deckId) => {
-    fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=4`)
-      .then((res) => res.json()) // parse response as JSON
-      .then((data) => {
-        console.log(data);
+        socket.emit("data", { data, users });
       })
       .catch((err) => {
         console.log(`error ${err}`);
@@ -82,7 +68,10 @@ function App() {
   const gameStartHandler = () => {
     socket.emit("gameStarted", { name, room });
     apiCall();
-    singlePlayer();
+    socket.on("result", (result) => {
+      // Handle the result data
+      console.log("Received result:", result);
+    });
   };
 
   useEffect(() => {
@@ -99,8 +88,6 @@ function App() {
     socket.on("gameStarted", (data) => {
       setMessage(data);
     });
-
-    // socket.emit("chatMessage", console.log("sup"));
   }, [socket]);
 
   const outputRoomName = (room) => {
