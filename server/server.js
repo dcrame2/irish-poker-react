@@ -16,7 +16,7 @@ const {
 app.use(cors);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     methods: ["GET", "POST"],
   },
 });
@@ -36,16 +36,18 @@ io.on("connection", (socket) => {
       room: user.room,
       users: getRoomUsers(user.room),
     });
+    // Emit an event to all connected clients when the game starts
+    socket.emit("gameStarted", "The game has started!");
+
+    // calling deck of cards api
   });
 
   socket.on("send_name", (data) => {
     socket.to(data.room).emit("receive_name", data);
   });
 
-  socket.on("chatMessage", (msg) => {
-    const user = getCurrentUser(socket.id);
-    io.to(user.room).emit("message", formatMessage(user.username, msg));
-  });
+  // Emit an event to all connected clients when the game starts
+  socket.emit("gameStarted", "The game has started!");
 });
 
 const PORT = 3002 || process.env.PORT;

@@ -5,6 +5,8 @@ import styled from "styled-components";
 import StartGameScreen from "./pages/StartGameScreen";
 import { Link } from "react-router-dom";
 import UsersCard from "./components/UsersCard";
+import GameStartedModal from "./components/GameStartedModal";
+import GameScreen from "./pages/GameScreen";
 
 const socket = io.connect("http://localhost:3002");
 
@@ -37,7 +39,8 @@ function App() {
   const [nameReceived, setNameReceived] = useState("");
   const [users, setUsers] = useState([]);
   const playerOne = users[0];
-
+  const [message, setMessage] = useState("");
+  let deckId = "";
   const joinRoom = () => {
     if (room !== "") {
       socket.emit("join_room", { name, room });
@@ -47,6 +50,39 @@ function App() {
     setRoomJoined(true);
 
     socket.emit("startGame", users);
+  };
+
+  const apiCall = () => {
+    const url = `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`;
+    fetch(url)
+      .then((res) => res.json()) // parse response as JSON
+      .then((data) => {
+        let deckId = "";
+        console.log(data);
+        deckId = data.deck_id;
+        console.log(deckId);
+        singlePlayer(deckId);
+      })
+      .catch((err) => {
+        console.log(`error ${err}`);
+      });
+  };
+
+  const singlePlayer = (deckId) => {
+    fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=4`)
+      .then((res) => res.json()) // parse response as JSON
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(`error ${err}`);
+      });
+  };
+
+  const gameStartHandler = () => {
+    socket.emit("gameStarted", { name, room });
+    apiCall();
+    singlePlayer();
   };
 
   useEffect(() => {
@@ -59,7 +95,12 @@ function App() {
       setUsers(users);
     });
 
-    socket.emit("chatMessage", console.log("sup"));
+    // Listen for the "gameStarted" event
+    socket.on("gameStarted", (data) => {
+      setMessage(data);
+    });
+
+    // socket.emit("chatMessage", console.log("sup"));
   }, [socket]);
 
   const outputRoomName = (room) => {
@@ -93,6 +134,8 @@ function App() {
         </div>
       ) : (
         <StartGameScreen
+          message={message}
+          gameStartHandler={gameStartHandler}
           outputRoomName={outputRoomName}
           playerOne={playerOne}
           users={users}

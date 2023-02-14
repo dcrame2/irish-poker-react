@@ -19,19 +19,18 @@ const GameContainer = styled.div`
   }
 `;
 
-const StartGameScreen = ({ users, playerOne, outputRoomName }) => {
+const StartGameScreen = ({ users, playerOne, outputRoomName, gameStartHandler, message }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const startGameHandler = () => {
     setGameStarted(true);
+    gameStartHandler();
   };
 
-  console.log(`Player 1: ${playerOne}`);
-  console.log(`Users: ${users}`);
   return (
     <GameContainer>
       {!gameStarted ? (
         <div className="inner-container">
-          <h1>Waiting for more players...</h1>
+          <h1>Waiting...</h1>
           {/* {outputRoomName(users[0].room)} */}
           <h2>Players:</h2>
           {users.map((user, i) => {
@@ -50,7 +49,7 @@ const StartGameScreen = ({ users, playerOne, outputRoomName }) => {
           )}
         </div>
       ) : (
-        <GameScreen />
+        <GameScreen message={message}/>
       )}
     </GameContainer>
   );

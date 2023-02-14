@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+
 const GameContainer = styled.div`
-  max-width: 1000px;
+  max-width: 500px;
   margin: auto;
-  height: 700px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,11 +17,11 @@ const GameContainer = styled.div`
   }
 `;
 
-const GameScreen = ({message}) => {
-    console.log(message);
+const GameStartedModal = () => {
+    // console.log(data);
   return (
-    <GameContainer>{message}</GameContainer>
+    <GameContainer>GameStartedModal</GameContainer>
   )
 }
 
-export default GameScreen
+export default GameStartedModal
