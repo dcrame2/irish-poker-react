@@ -24,7 +24,7 @@ const GameScreenContainer = styled.div`
             align-items: center;
             gap: 15px;
             img {
-              max-width: 75px;
+              max-width: 50px;
             }
           }
       }
@@ -34,7 +34,7 @@ const GameScreenContainer = styled.div`
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            gap: 50px;
+            gap: 20px;
             .btn-container {
                 display: flex;
               flex-direction: column;
@@ -56,14 +56,20 @@ const GameScreen = ({message, gameData, isLoading, users}) => {
     // const [player1, player2, player3, player4, player5] = gameData;
 
   const [buttons, setButtons] = useState('color'); // color, hol, ioo, suit
+  const [firstCard, showFirstCard] = useState(false);
 
   // do a true/ false state and if the button can be clickable
 
   const colorButtonHandler = () => {
     setButtons('color');
+   
   }
   const holButtonHandler = () => {
     setButtons('hol');
+     showFirstCard(true);
+
+    // logic for playing the game
+    // flipping card
   }
   const iooButtonHandler = () => {
     setButtons('ioo');
@@ -86,7 +92,8 @@ const GameScreen = ({message, gameData, isLoading, users}) => {
                 {data.map((d, i) => {
                   return (
                     <div className='card-btn-container'>
-                    <img src={d.image} alt="" />
+                    {/* <img src={d.image} alt="" /> */}
+                   {firstCard ? <img src={d.image} alt="" /> : <img src="/green_card.png" alt="" />}
                     </div>
                   )
                   })
@@ -94,16 +101,22 @@ const GameScreen = ({message, gameData, isLoading, users}) => {
                  </div>
                 <div className="container-of-btns">
                       <div className='btn-container'>
-                        <button onClick={holButtonHandler}> Red</button><button onClick={holButtonHandler}>Black</button>
+                        <button onClick={holButtonHandler}>Red</button>
+                        <button onClick={holButtonHandler}>Black</button>
                       </div> 
                       <div className='btn-container'>
-                        <button> Lower</button><button> Higher</button>
+                        <button>Lower</button>
+                        <button>Higher</button>
                       </div> 
                       <div className='btn-container'>
-                        <button> In</button><button> Out</button>
+                        <button>In</button>
+                        <button>Out</button>
                       </div> 
                       <div className='btn-container'>
-                        <button> Club</button><button> Spade</button><button> Diamond</button><button>Heart</button>
+                        <button>Club</button>
+                        <button>Spade</button>
+                        <button>Diamond</button>
+                        <button>Heart</button>
                       </div>
                      
               </div>
