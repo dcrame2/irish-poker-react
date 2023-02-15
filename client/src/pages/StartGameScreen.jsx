@@ -1,17 +1,10 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import io from "socket.io-client";
 import UsersCard from "../components/UsersCard";
 import GameScreen from "../pages/GameScreen";
 
 const GameContainer = styled.div`
-  max-width: 1000px;
-  margin: auto;
-  height: 700px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: grey;
   .inner-container {
     display: flex;
     flex-direction: column;
@@ -19,13 +12,8 @@ const GameContainer = styled.div`
   }
 `;
 
-const StartGameScreen = ({ users, playerOne, outputRoomName, gameStartHandler, message }) => {
-  const [gameStarted, setGameStarted] = useState(false);
-  const startGameHandler = () => {
-    setGameStarted(true);
-    gameStartHandler();
-  };
-
+const StartGameScreen = ({ isLoading, users, gameData, outputRoomName, gameStartHandler, message, gameStarted }) => {
+  console.log(gameStarted);
   return (
     <GameContainer>
       {!gameStarted ? (
@@ -42,14 +30,12 @@ const StartGameScreen = ({ users, playerOne, outputRoomName, gameStartHandler, m
               />
             );
           })}
-          {playerOne  ? (
-            <button onClick={startGameHandler}>Start Game</button>
-          ) : (
-            `player 1 starts the game`
-          )}
+      
+            <button onClick={gameStartHandler}>Start Game</button>
+         
         </div>
       ) : (
-        <GameScreen message={message}/>
+        <GameScreen gameData={gameData} message={message} isLoading={isLoading} users={users}/>
       )}
     </GameContainer>
   );

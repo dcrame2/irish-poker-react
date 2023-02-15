@@ -1,7 +1,7 @@
 // import "./App.css";
 import io from "socket.io-client";
 import { useEffect, useState, useRef } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import StartGameScreen from "./pages/StartGameScreen";
 import { Link } from "react-router-dom";
 import UsersCard from "./components/UsersCard";
@@ -30,7 +30,6 @@ const GameContainer = styled.div`
   }
 `;
 
-// let screen = <StartGameScreen />;
 function App() {
   //Room State
   const [room, setRoom] = useState("");
@@ -38,41 +37,35 @@ function App() {
   const [name, setName] = useState("");
   const [nameReceived, setNameReceived] = useState("");
   const [users, setUsers] = useState([]);
-  const playerOne = users[0];
   const [message, setMessage] = useState("");
-  let deckId = "";
+  const [gameData, setGameData] = useState([]);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // START OF INITAL SCREEN - JOIN ROOM
+
   const joinRoom = () => {
     if (room !== "") {
       socket.emit("join_room", { name, room });
     }
-
     socket.emit("send_name", { name, room });
     setRoomJoined(true);
-
-    socket.emit("startGame", users);
   };
 
-  const apiCall = () => {
-    const url = `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`;
-    fetch(url)
-      .then((res) => res.json()) // parse response as JSON
-      .then((data) => {
-        console.log(data);
-        socket.emit("data", { data, users });
-      })
-      .catch((err) => {
-        console.log(`error ${err}`);
-      });
-  };
+  // END OF INITAL SCREEN - JOIN ROOM
+
+  // START OF GAME SCREEN
 
   const gameStartHandler = () => {
-    socket.emit("gameStarted", { name, room });
-    apiCall();
-    socket.on("result", (result) => {
-      // Handle the result data
-      console.log("Received result:", result);
-    });
+    socket.emit("start game", { users, room });
+    // Handle the result data
   };
+
+  const outputRoomName = (room) => {
+    return <div>Your room is {room}</div>;
+  };
+
+  console.log(gameData);
 
   useEffect(() => {
     socket.on("receive_name", (data) => {
@@ -83,16 +76,25 @@ function App() {
       outputRoomName(room);
       setUsers(users);
     });
+  }, [socket]);
 
-    // Listen for the "gameStarted" event
-    socket.on("gameStarted", (data) => {
-      setMessage(data);
+  // END OF START GAME SCREEN
+
+  // START OF GAME SCREEN
+
+  useEffect(() => {
+    socket.on("game screen", () => {
+      setGameStarted(true);
+    });
+
+    socket.on("result", (result) => {
+      setIsLoading(false);
+      setGameData(result);
     });
   }, [socket]);
 
-  const outputRoomName = (room) => {
-    return <div>Your room is {room}</div>;
-  };
+  // END OF GAME SCREEN
+
   return (
     <GameContainer>
       {!roomJoined ? (
@@ -121,11 +123,13 @@ function App() {
         </div>
       ) : (
         <StartGameScreen
+          gameData={gameData}
+          gameStarted={gameStarted}
           message={message}
           gameStartHandler={gameStartHandler}
           outputRoomName={outputRoomName}
-          playerOne={playerOne}
           users={users}
+          isLoading={isLoading}
         />
       )}
     </GameContainer>

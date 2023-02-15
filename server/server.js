@@ -13,21 +13,14 @@ const {
   userLeave,
   getRoomUsers,
 } = require("../utils/users");
-
+let newArr = [];
 app.use(cors);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
-
-// let playersCard = [];
-
-// const players = (player) => {
-//   console.log(player);
-//   return playersCard.push(player);
-// };
 
 function getPlayersCards(array, cardAmount) {
   const playerCards = [];
@@ -52,56 +45,66 @@ io.on("connection", (socket) => {
       room: user.room,
       users: getRoomUsers(user.room),
     });
-    // Emit an event to all connected clients when the game starts
-    socket.emit("gameStarted", "The game has started!");
-
-    // calling deck of cards api
   });
 
   socket.on("send_name", (data) => {
     socket.to(data.room).emit("receive_name", data);
   });
 
-  // Emit an event to all connected clients when the game starts
-  socket.emit("gameStarted", "The game has started!");
+  socket.on("start game", (userData) => {
+    const url = `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`;
+    axios
+      .get(url)
 
-  // Listen for the 'data' event on the socket instance
-  socket.on("data", (data) => {
-    let newArr = [];
-    const singlePlayer = (deckId, users) => {
-      // console.log(deckId);
-      axios
-        .get(
-          `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${
-            users.length * 4
-          }`
-        )
-        // .then((res) => res.json()) // parse response as JSON
-        .then((data) => {
-          const players = getPlayersCards(data.data.cards, 4);
-          console.log(players);
-          players.map((player, i) => {
-            if (i === 0) {
-              player.player1 = users[0].id;
-            }
-            if (i === 1) {
-              player.player2 = users[1].id;
-            }
-            newArr.push(...player);
-          });
-          // return playersCards;
-          socket.emit("result", newArr);
-        })
-        .catch((err) => {
-          console.log(`error ${err}`);
-        });
-    };
-    // Process the data and send a response back to the client
-    // singlePlayer(data.data.deck_id, data.users);
-    singlePlayer(data.data.deck_id, data.users);
-    // console.log("players Card: " + playersCard);
+      .then((data) => {
+        const singlePlayer = (deckId, users) => {
+          axios
+            .get(
+              `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${
+                userData.users.length * 4
+              }`
+            )
+            .then((data) => {
+              const players = getPlayersCards(data.data.cards, 4);
+              newArr = players.map((player, i) => {
+                if (i === 0) {
+                  player.player1 = userData.users[0].id;
+                }
+                if (i === 1) {
+                  player.player2 = userData.users[1].id;
+                }
+                if (i === 2) {
+                  player.player3 = userData.users[2].id;
+                }
+                if (i === 3) {
+                  player.player4 = userData.users[3].id;
+                }
+                if (i === 4) {
+                  player.player5 = userData.users[4].id;
+                }
+                if (i === 5) {
+                  player.player6 = userData.users[5].id;
+                }
+                return player;
+              });
+              console.log(newArr);
+              console.log(userData.room);
+              io.to(userData.room).emit("result", newArr);
+              return newArr;
+            })
+            .catch((err) => {
+              console.log(`error ${err}`);
+            });
+        };
 
-    // console.log(data.data.deck_id);
+        // Process the data and send a response back to the client
+        singlePlayer(data.data.deck_id, data.users);
+      })
+      .catch((err) => {
+        console.log(`error ${err}`);
+      });
+
+    io.to(userData.room).emit("game screen");
   });
 });
 
