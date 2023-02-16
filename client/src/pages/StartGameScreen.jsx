@@ -1,46 +1,51 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+import styled from "styled-components/macro";
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:3002");
+import UsersCard from "../components/UsersCard";
+import GameScreen from "../pages/GameScreen";
 
-function StartGameScreen() {
-  const [message, setMessage] = useState("");
-  const [messageReceived, setMessageReceived] = useState("");
-  const [room, setRoom] = useState("");
+const GameContainer = styled.div`
+  .inner-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+`;
 
-  const joinRoom = () => {
-    if (room !== "") {
-      socket.emit("join_room", room);
-    }
-  };
-
-  const sendMessage = () => {
-    socket.emit("send_message", { message, room });
-  };
-
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      setMessageReceived(data.message);
-    });
-  }, [socket]);
-
+const StartGameScreen = ({ isLoading, users, gameData, outputRoomName, gameStartHandler, message, gameStarted, colorButtonHandler,holButtonHandler, iooButtonHandler, suitButtonHandler, buttons, firstCard }) => {
+  console.log(gameStarted);
   return (
-    <>
-      <input
-        placeholder="Room Number..."
-        onChange={(event) => {
-          setRoom(event.target.value);
-        }}
-      />
-      <button onClick={joinRoom}>Join Room</button>
-      <input
-        placeholder="message"
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send Message</button>
-      <h1>Message:</h1>
-      {messageReceived}
-    </>
+    <GameContainer>
+      {!gameStarted ? (
+        <div className="inner-container">
+          <h1>Waiting...</h1>
+          {/* {outputRoomName(users[0].room)} */}
+          <h2>Players:</h2>
+          {users.map((user, i) => {
+            return (
+              <UsersCard
+                playerNumber={i + 1}
+                users={user.username}
+                key={user.id}
+              />
+            );
+          })}
+      
+            <button onClick={gameStartHandler}>Start Game</button>
+         
+        </div>
+      ) : (
+        <GameScreen gameData={gameData} message={message} isLoading={isLoading} users={users}  
+          colorButtonHandler={colorButtonHandler}
+          holButtonHandler={holButtonHandler}
+          iooButtonHandler={iooButtonHandler}
+          suitButtonHandler={suitButtonHandler}
+             buttons={buttons}
+          firstCard={firstCard}/>
+         
+      )}
+    </GameContainer>
   );
-}
+};
 
 export default StartGameScreen;

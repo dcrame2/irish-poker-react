@@ -5,6 +5,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const server = http.createServer(app);
 const cors = require("cors");
+const axios = require("axios");
 
 const {
   userJoin,
@@ -12,7 +13,7 @@ const {
   userLeave,
   getRoomUsers,
 } = require("../utils/users");
-
+let newArr = [];
 app.use(cors);
 const io = new Server(server, {
   cors: {
@@ -21,79 +22,95 @@ const io = new Server(server, {
   },
 });
 
-// const formatMessage = require("./utils/messages");
-// const {
-//   userJoin,
-//   getCurrentUser,
-//   userLeave,
-//   getRoomUsers,
-// } = require("./utils/users");
-
-// Set static folder
-// app.use(express.static(path.join(__dirname, "client", "public", "index.html")));
+function getPlayersCards(array, cardAmount) {
+  const playerCards = [];
+  for (let i = 0; i < array.length; i += cardAmount) {
+    playerCards.push(array.slice(i, i + cardAmount));
+  }
+  return playerCards;
+}
 
 // Run when client connects
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("join_room", (data) => {
-    socket.join(data);
+    const user = userJoin(socket.id, data.name, data.room);
+
+    console.log(`User joined ${data.room}: ${socket.id}`);
+    console.log(user);
+    socket.join(user.room);
+
+    io.to(user.room).emit("roomUsers", {
+      room: user.room,
+      users: getRoomUsers(user.room),
+    });
   });
 
   socket.on("send_name", (data) => {
     socket.to(data.room).emit("receive_name", data);
   });
 
-  //   socket.on("joinRoom", ({ username, room }) => {
-  //     const user = userJoin(socket.id, username, room);
+  socket.on("start game", (userData) => {
+    const url = `https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`;
+    axios
+      .get(url)
 
-  //     socket.join(user.room);
+      .then((data) => {
+        const singlePlayer = (deckId, users) => {
+          axios
+            .get(
+              `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${
+                userData.users.length * 4
+              }`
+            )
+            .then((data) => {
+              const players = getPlayersCards(data.data.cards, 4);
+              newArr = players.map((player, i) => {
+                if (i === 0) {
+                  player.player1 = userData.users[0].id;
+                }
+                if (i === 1) {
+                  player.player2 = userData.users[1].id;
+                }
+                if (i === 2) {
+                  player.player3 = userData.users[2].id;
+                }
+                if (i === 3) {
+                  player.player4 = userData.users[3].id;
+                }
+                if (i === 4) {
+                  player.player5 = userData.users[4].id;
+                }
+                if (i === 5) {
+                  player.player6 = userData.users[5].id;
+                }
+                return player;
+              });
+              console.log(newArr);
+              console.log(userData.room);
+              io.to(userData.room).emit("result", newArr);
+              return newArr;
+            })
+            .catch((err) => {
+              console.log(`error ${err}`);
+            });
+        };
 
-  //     // Welcome current user
-  //     // socket.emit("message", formatMessage(botName, "Welcome to CharCord!"));
+        // Process the data and send a response back to the client
+        singlePlayer(data.data.deck_id, data.users);
+      })
+      .catch((err) => {
+        console.log(`error ${err}`);
+      });
 
-  //     // Broadcast when a user connects
-  //     //broadcast.emit() shows a messages to everyone but the current client.
-  //     // socket.broadcast
-  //     //   .to(user.room)
-  //     //   .emit(
-  //     //     "message",
-  //     //     formatMessage(botName, `${user.username} has joined the chat`)
-  //     // );
+    io.to(userData.room).emit("game screen");
+  });
 
-  //     // Send users and room info
-  //     io.to(user.room).emit("roomUsers", {
-  //       room: user.room,
-  //       users: getRoomUsers(user.room),
-  //     });
-  //   });
-
-  //all clients in general
-  //   io.emit()
-
-  //Listen for chat message
-  // socket.on("chatMessage", (msg) => {
-  //   const user = getCurrentUser(socket.id);
-  //   io.to(user.room).emit("message", formatMessage(user.username, msg));
-  // });
-
-  // Runs when client disconnects
-  //   socket.on("disconnect", () => {
-  //     const user = userLeave(socket.id);
-
-  //     if (user) {
-  //       // io.to(user.room).emit(
-  //       //   "message",
-  //       //   formatMessage(botName, `${user.username} has left the chat`)
-  //       // );
-
-  //       // Send users and room info
-  //       io.to(user.room).emit("roomUsers", {
-  //         room: user.room,
-  //         users: getRoomUsers(user.room),
-  //       });
-  //     }
-  //   });
+  socket.on("playersCard", (data) => {
+    console.log("playersCard data:", data);
+    io.emit("playerOneCards", data);
+  });
 });
 
 const PORT = 3002 || process.env.PORT;
