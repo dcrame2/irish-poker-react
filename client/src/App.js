@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import UsersCard from "./components/UsersCard";
 import GameStartedModal from "./components/GameStartedModal";
 import GameScreen from "./pages/GameScreen";
+import "./global.css";
 
 const socket = io.connect("http://localhost:3002");
 
@@ -15,14 +16,56 @@ const GameContainer = styled.div`
   margin: auto;
   height: 700px;
   display: flex;
+  /* align-items: flex-start; */
   align-items: center;
   flex-direction: column;
   justify-content: center;
   background-color: grey;
+  /* background-image: url("bp.jpg"); */
+  background-position: center;
+  background-size: cover;
   .inner-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-left: 100px;
+    .form-container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      justify-content: space-between;
+
+      label {
+        font-size: 24px;
+        color: white;
+      }
+      input {
+        background: transparent;
+        border: 1px solid white;
+        border-radius: 6px;
+        padding: 10px;
+        color: white;
+        &::placeholder {
+          color: white;
+        }
+      }
+    }
+    button {
+      border: 1px solid white;
+      background-color: green;
+      border-radius: 6px;
+      padding: 10px;
+      color: white;
+      transition: background-color 0.7s ease-in-out;
+      /* transition: color 0.7s ease; */
+      &:hover {
+        transition: background-color 0.7s ease-in-out;
+        /* transition: color 0.7s ease; */
+        color: green;
+        background-color: white;
+        border: 1px solid green;
+      }
+    }
     .user-list {
       background-color: lightblue;
       padding: 10px;
@@ -99,27 +142,37 @@ function App() {
     <GameContainer>
       {!roomJoined ? (
         <div className="inner-container">
-          <label htmlFor="room">Room</label>
-          <input
-            name="room"
-            id="room"
-            type="text"
-            placeholder="Room Number..."
-            onChange={(event) => {
-              setRoom(event.target.value);
-            }}
-          />
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            placeholder="Name..."
-            onChange={(event) => {
-              setName(event.target.value);
-            }}
-          />
-          <button onClick={joinRoom}>Join Game</button>
+          <form>
+            <div className="form-container">
+              <label htmlFor="room">Room Name</label>
+              <input
+                name="room"
+                id="room"
+                type="text"
+                placeholder="Room Name..."
+                onChange={(event) => {
+                  setRoom(event.target.value);
+                }}
+                required
+              />
+            </div>
+            <div className="form-container">
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Username..."
+                onChange={(event) => {
+                  setName(event.target.value);
+                }}
+                required
+              />
+            </div>
+            <button type="submit" onClick={joinRoom}>
+              Join Game
+            </button>
+          </form>
         </div>
       ) : (
         <StartGameScreen
