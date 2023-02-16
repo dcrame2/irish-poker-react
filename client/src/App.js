@@ -121,6 +121,49 @@ function App() {
     });
   }, [socket]);
 
+  // Game logic
+  const [buttons, setButtons] = useState("color"); // color, hol, ioo, suit
+  const [firstCard, showFirstCard] = useState(false);
+
+  // do a true/ false state and if the button can be clickable
+
+  const colorButtonHandler = () => {
+    setButtons("color");
+  };
+  const holButtonHandler = () => {
+    setButtons("hol");
+    showFirstCard(true);
+    socket.emit(
+      "playersCard",
+      gameData.filter((data, i) => i === 0)
+    );
+    // logic for playing the game
+    // flipping card
+    // emitting image & card value to the rest of the room.
+  };
+  const iooButtonHandler = () => {
+    setButtons("ioo");
+  };
+  const suitButtonHandler = () => {
+    setButtons("suit");
+  };
+  // red and black logic
+  const redHandler = () => {};
+  const blackHandler = () => {};
+  // higher and lower logic
+  const higherHandler = () => {};
+  const lowerHandler = () => {};
+  // in and out logic
+  const inHandler = () => {};
+  const outHandler = () => {};
+  // suits logic
+  const spadesHandler = () => {};
+  const diamondsHandler = () => {};
+  const heartsHandler = () => {};
+  const clubsHandler = () => {};
+
+  //  end of game logic
+
   // END OF START GAME SCREEN
 
   // START OF GAME SCREEN
@@ -176,6 +219,12 @@ function App() {
         </div>
       ) : (
         <StartGameScreen
+          buttons={buttons}
+          firstCard={firstCard}
+          colorButtonHandler={colorButtonHandler}
+          holButtonHandler={holButtonHandler}
+          iooButtonHandler={iooButtonHandler}
+          suitButtonHandler={suitButtonHandler}
           gameData={gameData}
           gameStarted={gameStarted}
           message={message}

@@ -45,38 +45,7 @@ const GameScreenContainer = styled.div`
   }
 `;
 
-const GameScreen = ({message, gameData, isLoading, users}) => {
-    // const player1 = gameData[0];
-    // const player2 = gameData[1];
-    // const player3 = gameData[2];
-    // const player4 = gameData[3];
-    // const player5 = gameData[4];
-    // const player6 = gameData[5];
-
-    // const [player1, player2, player3, player4, player5] = gameData;
-
-  const [buttons, setButtons] = useState('color'); // color, hol, ioo, suit
-  const [firstCard, showFirstCard] = useState(false);
-
-  // do a true/ false state and if the button can be clickable
-
-  const colorButtonHandler = () => {
-    setButtons('color');
-   
-  }
-  const holButtonHandler = () => {
-    setButtons('hol');
-     showFirstCard(true);
-
-    // logic for playing the game
-    // flipping card
-  }
-  const iooButtonHandler = () => {
-    setButtons('ioo');
-  }
-  const suitButtonHandler = () => {
-    setButtons('suit');
-  }
+const GameScreen = ({message, gameData, isLoading, users, colorButtonHandler, holButtonHandler, iooButtonHandler, suitButtonHandler, button, firstCard}) => {
 
   return (
     <GameScreenContainer>

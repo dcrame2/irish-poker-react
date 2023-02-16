@@ -17,7 +17,7 @@ let newArr = [];
 app.use(cors);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3003",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -105,6 +105,11 @@ io.on("connection", (socket) => {
       });
 
     io.to(userData.room).emit("game screen");
+  });
+
+  socket.on("playersCard", (data) => {
+    console.log("playersCard data:", data);
+    io.emit("playerOneCards", data);
   });
 });
 
