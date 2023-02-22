@@ -84,6 +84,7 @@ function App() {
   const [gameData, setGameData] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
 
   // START OF INITAL SCREEN - JOIN ROOM
 
@@ -148,10 +149,55 @@ function App() {
     setButtons("suit");
   };
   // red and black logic
-  const redHandler = () => {};
+  const redHandler = () => {
+    showFirstCard(true);
+    // get the current player's cards
+    const currentPlayerCards = gameData[currentPlayer];
+
+    // create a copy of the current player's cards array
+    const updatedCards = [...currentPlayerCards];
+    console.log(updatedCards);
+    // reverse the hidden property of the first card in the array
+    updatedCards[0].hidden = !updatedCards[0].hidden;
+
+    // create a copy of the cards array
+    const updatedPlayers = [...gameData];
+
+    // update the current player's cards with the updated array
+    updatedPlayers[currentPlayer] = updatedCards;
+
+    // update the state with the new cards array
+    setGameData(updatedPlayers);
+
+    // move on to the next player
+    setCurrentPlayer((currentPlayer + 1) % 2);
+  };
+
   const blackHandler = () => {};
   // higher and lower logic
-  const higherHandler = () => {};
+  const higherHandler = () => {
+    showFirstCard(true);
+    // get the current player's cards
+    const currentPlayerCards = gameData[currentPlayer];
+    console.log(currentPlayerCards);
+    // create a copy of the current player's cards array
+    const updatedCards = [...currentPlayerCards];
+    console.log(updatedCards);
+    // reverse the hidden property of the first card in the array
+    updatedCards[1].hidden = !updatedCards[1].hidden;
+
+    // create a copy of the cards array
+    const updatedPlayers = [...gameData];
+
+    // update the current player's cards with the updated array
+    updatedPlayers[currentPlayer] = updatedCards;
+
+    // update the state with the new cards array
+    setGameData(updatedPlayers);
+
+    // move on to the next player
+    setCurrentPlayer((currentPlayer + 1) % 2);
+  };
   const lowerHandler = () => {};
   // in and out logic
   const inHandler = () => {};
@@ -219,9 +265,11 @@ function App() {
         </div>
       ) : (
         <StartGameScreen
+          currentPlayer={currentPlayer}
           buttons={buttons}
           firstCard={firstCard}
-          colorButtonHandler={colorButtonHandler}
+          redHandler={redHandler}
+          higherHandler={higherHandler}
           holButtonHandler={holButtonHandler}
           iooButtonHandler={iooButtonHandler}
           suitButtonHandler={suitButtonHandler}

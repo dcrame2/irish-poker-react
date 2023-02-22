@@ -12,7 +12,7 @@ const GameContainer = styled.div`
   }
 `;
 
-const StartGameScreen = ({ isLoading, users, gameData, outputRoomName, gameStartHandler, message, gameStarted, colorButtonHandler,holButtonHandler, iooButtonHandler, suitButtonHandler, buttons, firstCard }) => {
+const StartGameScreen = ({ isLoading, users,currentPlayer, higherHandler, gameData, outputRoomName, gameStartHandler, message, gameStarted, redHandler,holButtonHandler, iooButtonHandler, suitButtonHandler, buttons, firstCard }) => {
   console.log(gameStarted);
   return (
     <GameContainer>
@@ -35,8 +35,9 @@ const StartGameScreen = ({ isLoading, users, gameData, outputRoomName, gameStart
          
         </div>
       ) : (
-        <GameScreen gameData={gameData} message={message} isLoading={isLoading} users={users}  
-          colorButtonHandler={colorButtonHandler}
+        <GameScreen  currentPlayer={currentPlayer} gameData={gameData} message={message} isLoading={isLoading} users={users}  
+          redHandler={redHandler}
+          higherHandler={higherHandler}
           holButtonHandler={holButtonHandler}
           iooButtonHandler={iooButtonHandler}
           suitButtonHandler={suitButtonHandler}

@@ -24,7 +24,7 @@ const GameScreenContainer = styled.div`
             align-items: center;
             gap: 15px;
             img {
-              max-width: 50px;
+              max-width: 35px;
             }
           }
       }
@@ -45,13 +45,19 @@ const GameScreenContainer = styled.div`
   }
 `;
 
-const GameScreen = ({message, gameData, isLoading, users, colorButtonHandler, holButtonHandler, iooButtonHandler, suitButtonHandler, button, firstCard}) => {
-
+const GameScreen = ({message, gameData,currentPlayer, isLoading, users, redHandler, higherHandler, iooButtonHandler, suitButtonHandler, button, firstCard}) => {
+  const player1 = gameData[0];
+  const player2 = gameData[1];
+  const player3 = gameData[2];
+  const player4 = gameData[3];
+  const player5 = gameData[4];
+  const player6 = gameData[5];
+  console.log(player2);
   return (
     <GameScreenContainer>
       <h1>Lets Start!</h1>
       <div className='game-inner-container'>
-       {isLoading && <p>Loading data...</p>}
+      {isLoading && <p>Loading data...</p>}
       {!isLoading && gameData.map((data, i) => {
         console.log(data);
           return (
@@ -59,23 +65,24 @@ const GameScreen = ({message, gameData, isLoading, users, colorButtonHandler, ho
               <h3>{users[i].username}</h3>
               <div className='cards-container'>
                 {data.map((d, i) => {
+                  console.log(currentPlayer);
                   return (
                     <div className='card-btn-container'>
-                    {/* <img src={d.image} alt="" /> */}
-                   {firstCard ? <img src={d.image} alt="" /> : <img src="/green_card.png" alt="" />}
+                  {/* <img src={d.image} alt="" /> */}
+                  {firstCard && currentPlayer === i + 1 ? <img src={d.image} alt="" /> : <img src="/green_card.png" alt="" />}
                     </div>
                   )
                   })
                 }
-                 </div>
+                </div>
                 <div className="container-of-btns">
                       <div className='btn-container'>
-                        <button onClick={holButtonHandler}>Red</button>
-                        <button onClick={holButtonHandler}>Black</button>
+                        <button onClick={redHandler}>Red</button>
+                        <button onClick={redHandler}>Black</button>
                       </div> 
                       <div className='btn-container'>
-                        <button>Lower</button>
-                        <button>Higher</button>
+                        <button >Lower</button>
+                        <button onClick={higherHandler}>Higher</button>
                       </div> 
                       <div className='btn-container'>
                         <button>In</button>
@@ -86,18 +93,13 @@ const GameScreen = ({message, gameData, isLoading, users, colorButtonHandler, ho
                         <button>Spade</button>
                         <button>Diamond</button>
                         <button>Heart</button>
-                      </div>
-                     
-              </div>
-             
+                      </div>            
+              </div>            
           </div>
           )
-      
-
       })}
   </div>
-
-     </GameScreenContainer>
+</GameScreenContainer>
   )
 }
 
